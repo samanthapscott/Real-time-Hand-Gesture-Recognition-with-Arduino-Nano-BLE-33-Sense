@@ -92,7 +92,7 @@ A full technical report documenting the system design, methodology, experimental
 
 ## Course
 
-**EEL 4746 — Microprocessors** | University of Florida
+**EEL 4746 — Microprocessors** | Florida International University
 
 ---
 
