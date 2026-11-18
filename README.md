@@ -22,7 +22,7 @@ NodeMCU ESP8266 -> local Wi-Fi -> HTTP server (port 80)
 ## Repository contents
 - [Final technical report](./EEL4746-FinalProjectReport.pdf) — original project report, design, troubleshooting, and results
 - [ESP8266 firmware](./firmware/esp8266/ESP8266_FinalWifi.ino) — local Wi-Fi server and live browser dashboard
-- **Arduino inference firmware** — original `ML_FinalProject_Arduino_V2.ino` is being prepared for publication
+- [Arduino inference firmware](./firmware/arduino/ML_FinalProject_Arduino_V2.ino) — Edge Impulse sensor fusion and UART output (formatting normalized from the supplied sketch)
 - **Edge Impulse library** — generated `final_project_inferencing` library is **not redistributed here** pending confirmation of its license terms
 
 ## Reproducing the project
@@ -33,7 +33,7 @@ NodeMCU ESP8266 -> local Wi-Fi -> HTTP server (port 80)
 5. Connect the Arduino UART TX and ESP8266 RX with compatible logic levels and common ground, verify pin mapping, and upload the respective sketches.
 6. Connect a browser on the same local network to the IP printed by the ESP8266. The page polls `/data` for current scores.
 
-**Important:** The firmware and generated Edge Impulse library were supplied from the original project archive. A complete clean-room build and hardware retest have **not** been performed for this repository update. The Arduino sketch and exported library are not yet included in this branch.
+**Important:** The firmware and generated Edge Impulse library were supplied from the original project archive. A complete clean-room build and hardware retest have **not** been performed for this repository update. The Arduino sketch is included; the exported Edge Impulse library is not redistributed in this repository.
 
 ## Engineering lessons and limitations
 - The university WPA2-Enterprise network was incompatible with the ESP8266's basic WPA2-PSK setup; the team tested with a laptop hotspot.
