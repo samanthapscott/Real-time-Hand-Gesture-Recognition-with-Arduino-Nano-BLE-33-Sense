@@ -1,102 +1,48 @@
-# Real-Time Hand Gesture Recognition with Arduino Nano 33 BLE Sense
+# Real-Time Hand Gesture Recognition and Wi-Fi Dashboard
 
-**Embedded Systems | Machine Learning | Signal Processing**
-
----
+**FIU EEL4746 — Microcomputers I | Arduino Nano 33 BLE Sense Rev2 | Edge Impulse | ESP8266**
 
 ## Overview
+A four-person course project using the **Arduino Nano 33 BLE Sense Rev2** to sample motion sensors and run a gesture-classification model trained in **Edge Impulse Studio**. The Arduino sends prediction labels and scores over **UART** to a **NodeMCU ESP8266**, which serves a local web dashboard displaying the detected gesture and class scores.
 
-This project implements a real-time hand gesture recognition system using the Arduino Nano 33 BLE Sense microcontroller. A TinyML model trained on accelerometer data classifies hand gestures on-device with low latency, demonstrating the practical deployment of machine learning at the edge without reliance on cloud infrastructure.
+The four classes are **Circle**, **Idle**, **Right-Left**, and **Up-Down**. This is an embedded TinyML + IoT implementation, not a webcam-based hand tracker.
 
----
-
-## Key Features
-
-- On-device inference using TensorFlow Lite for Microcontrollers
-- Real-time gesture classification via the onboard IMU (LSM9DS1)
-- Trained and deployed a custom neural network model on a 256 KB flash microcontroller
-- Serial output for gesture prediction display and debugging
-- Designed for low power consumption and portable deployment
-
----
-
-## Technical Stack
-
-| Layer | Technology |
-|---|---|
-| Microcontroller | Arduino Nano 33 BLE Sense |
-| Sensor | LSM9DS1 IMU (Accelerometer / Gyroscope) |
-| ML Framework | TensorFlow Lite for Microcontrollers |
-| Model Training | Python, TensorFlow / Keras |
-| Firmware Language | C++ (Arduino) |
-| Data Collection | Serial communication via Arduino IDE |
-
----
-
-## System Architecture
-
-```
-IMU Sensor (Accelerometer Data)
-        |
-        v
-  Data Preprocessing
-  (Normalization, Windowing)
-        |
-        v
-  TFLite Model Inference
-  (Neural Network, on-device)
-        |
-        v
-  Gesture Classification Output
-  (Serial Monitor / Output Signal)
+## Architecture
+```text
+Arduino Nano 33 BLE Sense Rev2
+  IMU (BMI270/BMM150) -> Edge Impulse inference
+           |
+           | UART / Serial1 at 9600 baud
+           v
+NodeMCU ESP8266 -> local Wi-Fi -> HTTP server (port 80)
+                                     |-- /      HTML/JavaScript dashboard
+                                     +-- /data  comma-separated prediction scores
 ```
 
----
+## Repository contents
+- [Final technical report](./EEL4746-FinalProjectReport.pdf) — original project report, design, troubleshooting, and results
+- [ESP8266 firmware](./firmware/esp8266/ESP8266_FinalWifi.ino) — local Wi-Fi server and live browser dashboard
+- **Arduino inference firmware** — original `ML_FinalProject_Arduino_V2.ino` is being prepared for publication
+- **Edge Impulse library** — generated `final_project_inferencing` library is **not redistributed here** pending confirmation of its license terms
 
-## Machine Learning Pipeline
+## Reproducing the project
+1. Use an **Arduino Nano 33 BLE Sense Rev2** and **NodeMCU ESP8266**.
+2. In Edge Impulse Studio, train or open the original gesture-classification impulse and export its **Arduino library** as `final_project_inferencing.zip`. Install it via Arduino IDE **Sketch → Include Library → Add .ZIP Library**. The original Arduino sketch includes `<final_project_inferencing.h>`.
+3. Install the Arduino board support and required libraries, including `Arduino_BMI270_BMM150` and the sensor libraries referenced by the original sketch.
+4. Configure a Wi-Fi SSID/password in the ESP8266 firmware **locally**; never commit actual credentials.
+5. Connect the Arduino UART TX and ESP8266 RX with compatible logic levels and common ground, verify pin mapping, and upload the respective sketches.
+6. Connect a browser on the same local network to the IP printed by the ESP8266. The page polls `/data` for current scores.
 
-1. **Data Collection** — Recorded raw accelerometer samples for each target gesture using the Arduino's serial interface.
-2. **Preprocessing** — Normalized and windowed samples into fixed-length feature vectors.
-3. **Model Design** — Built a fully connected neural network using Keras with ReLU activations and softmax output.
-4. **Training** — Trained on labeled gesture data with validation split; exported to `.tflite` format.
-5. **Quantization** — Applied post-training quantization to reduce model size for deployment to constrained hardware.
-6. **Deployment** — Converted model to a C byte array and integrated into Arduino firmware using the TFLite Micro API.
+**Important:** The firmware and generated Edge Impulse library were supplied from the original project archive. A complete clean-room build and hardware retest have **not** been performed for this repository update. The Arduino sketch and exported library are not yet included in this branch.
 
----
+## Engineering lessons and limitations
+- The university WPA2-Enterprise network was incompatible with the ESP8266's basic WPA2-PSK setup; the team tested with a laptop hotspot.
+- The model initially struggled to generalize to different movement speeds and amplitudes. Additional gesture samples and filtering improved recognition, although **Circle** and **Up-Down** could still overlap.
+- The web dashboard was **locally hosted** on the ESP8266; a remotely hosted/cloud dashboard was a proposed future improvement.
+- The supplied ESP8266 sketch uses a simple positional serial protocol. This is a course prototype, not a hardened network service.
 
-## Hardware Requirements
+## Team and attribution
+**Samantha Scott, Andrew Mendez, Sharnece Young, and Ryan Berish** — FIU EEL4746 project team. See the original report for documentation and project context.
 
-- Arduino Nano 33 BLE Sense
-- USB Micro-B cable
-- Arduino IDE or PlatformIO
-
----
-
-## Project Report
-
-A full technical report documenting the system design, methodology, experimental results, and analysis is included in this repository.
-
-[View Full Project Report (PDF)](./EEL4746-FinalProjectReport.pdf)
-
----
-
-## Skills Demonstrated
-
-- Embedded C++ firmware development for resource-constrained microcontrollers
-- End-to-end machine learning pipeline: data collection through on-device deployment
-- TensorFlow Lite model optimization and quantization
-- IMU sensor integration and real-time signal processing
-- Cross-disciplinary application of software and hardware engineering
-
----
-
-## Course
-
-**EEL 4746 — Microprocessors** | Florida International University
-
----
-
-## Author
-
-**Samantha Scott**
-[GitHub Profile](https://github.com/samanthapscott)
+## License and safety
+The generated Edge Impulse inference ZIP is intentionally excluded pending confirmation of applicable redistribution terms. Wi-Fi credentials from the archived ESP8266 sketch have been replaced with placeholders. Do not publish personal passwords, private datasets, or licensed dependencies without permission.
